@@ -1,0 +1,42 @@
+name: CI & OTA Safety Check
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  validate:
+    name: Lint, Test & OTA Fingerprint Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Pure Engines Sync Check
+        run: npm run engines:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Jest Unit & Integration Tests
+        run: npm test
+
+      - name: Expo Doctor Health Check
+        run: npm run doctor
+
+      - name: Verify Native Fingerprint (OTA Compatibility)
+        run: npm run fingerprint:check
