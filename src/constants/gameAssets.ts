@@ -17,6 +17,11 @@ export const GAME_IMAGES: Record<string, ImageSourcePropType> = {
   'color-flow': require('../../assets/games/color-flow.jpg'),
   'sound-match': require('../../assets/games/sound-match.jpg'),
   'target-sniper': require('../../assets/games/target-sniper.jpg'),
+  'lucky-reels': require('../../assets/games/lucky-reels.jpg'),
+  slots: require('../../assets/games/lucky-reels.jpg'),
+  crash: require('../../assets/games/crash.jpg'),
+  plinko: require('../../assets/games/plinko.jpg'),
+  mines: require('../../assets/games/mines.jpg'),
 };
 
 export const BANNER_IMAGES: Record<string, ImageSourcePropType> = {

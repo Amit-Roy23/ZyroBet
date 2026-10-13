@@ -12,7 +12,9 @@ export type LedgerReason =
   | 'game_reward'
   | 'purchase'
   | 'spend'
-  | 'admin_adjust';
+  | 'admin_adjust'
+  | 'casino_bet'
+  | 'casino_win';
 
 export interface Database {
   public: {

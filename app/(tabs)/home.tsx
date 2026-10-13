@@ -49,7 +49,11 @@ export default function HomeScreen() {
               ? 'Trending Now'
               : `${selectedCategory.toUpperCase()} Games`
           }
-          subtitle="Skill & reaction challenges • Win virtual coins"
+          subtitle={
+            selectedCategory === 'casino'
+              ? 'Slots, Crash, Plinko & Mines • Virtual coins only'
+              : 'Skill & reaction challenges • Win virtual coins'
+          }
           onGamePress={handleGamePress}
           headerComponent={
             <View>

@@ -114,7 +114,9 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onPress, cardWidth }) 
         </Text>
         <View style={styles.rewardRow}>
           <Ionicons name="disc" size={11} color={colors.gold} />
-          <Text style={styles.rewardText}>+{game.rewardCoins}</Text>
+          <Text style={styles.rewardText}>
+            {game.category === 'casino' ? `up to ${game.rewardCoins}×` : `+${game.rewardCoins}`}
+          </Text>
         </View>
       </View>
     </AnimatedPressable>

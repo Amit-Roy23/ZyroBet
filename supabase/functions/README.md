@@ -14,6 +14,7 @@
      - `claim-daily-reward`: Verifies UTC daily streak eligibility before awarding coins.
      - `submit-score`: Validates skill game round outcome and awards calibrated victory coins.
      - `verify-purchase`: Verifies App Store / Google Play transaction tokens before ledger crediting.
+     - `casino-play`: Slots / Crash / Plinko / Mines. Generates provably fair outcomes and moves coins only through the `casino_open_round` / `casino_settle_round` SQL functions.
 
 ## Environment Variables
 

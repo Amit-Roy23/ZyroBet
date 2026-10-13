@@ -16,7 +16,7 @@ export interface GameItem {
   id: string;
   slug: string;
   title: string;
-  category: 'puzzle' | 'arcade' | 'quiz' | 'events' | 'action';
+  category: 'puzzle' | 'arcade' | 'quiz' | 'events' | 'action' | 'casino';
   description: string;
   instructions: string;
   thumbnailUrl: string;

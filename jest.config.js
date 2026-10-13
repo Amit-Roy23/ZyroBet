@@ -6,6 +6,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@shared/(.*)$': '<rootDir>/shared/$1',
     '^react-native/setup-env$':
       '<rootDir>/node_modules/react-native/src/private/setup/setUpDefaultReactNativeEnvironment.js',
     '^react-native/src/setup-env\\.js$':
