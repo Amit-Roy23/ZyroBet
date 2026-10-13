@@ -88,6 +88,20 @@ function getReasonMeta(reason: LedgerReason, delta: number): ReasonMeta {
         color: delta > 0 ? colors.gold : colors.warning,
         bgColor: 'rgba(245, 197, 66, 0.15)',
       };
+    case 'casino_bet':
+      return {
+        title: 'Casino Bet',
+        icon: 'diamond',
+        color: colors.danger,
+        bgColor: 'rgba(255, 90, 95, 0.15)',
+      };
+    case 'casino_win':
+      return {
+        title: 'Casino Win',
+        icon: 'diamond',
+        color: colors.gold,
+        bgColor: 'rgba(245, 197, 66, 0.15)',
+      };
     default:
       return {
         title: delta > 0 ? 'Coins Received' : 'Coins Spent',

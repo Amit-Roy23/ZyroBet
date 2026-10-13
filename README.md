@@ -1,6 +1,6 @@
-# ZyroBet (Casual Skill Mini-Games Mobile App)
+# ZyroBet (Casual Mini-Games & Casino Games Mobile App)
 
-> **Pure Casual Mini-Games • Virtual Coins Only**  
+> **Skill Mini-Games + Virtual-Coin Casino Games • Virtual Coins Only**  
 > Built with Expo SDK 57, React Native (New Architecture enabled), TypeScript Strict, Expo Router, Reanimated UI worklets, and Supabase.
 
 ---
@@ -8,8 +8,9 @@
 ## 🛡️ Core Product & Compliance Rules
 
 - **Virtual Coins Only:** Coins have **NO cash value** and can **NEVER** be withdrawn, redeemed, or exchanged for real money, goods, or prizes.
-- **No Real-Money Gambling:** No casino-style mechanics (no slots, roulette, crash, betting, or loot-box odds).
-- **Skill-Based Deterministic Games:** Every mini-game is skill, memory, knowledge, or reaction-based (Neon 2048, Memory Matrix, Tap Reflex). Rewards are strictly deterministic from score; no randomness in payouts.
+- **No Real-Money Gambling:** Nothing can be won that has cash value. The Casino section (Slots, Crash, Plinko, Mines) is played with virtual coins only.
+- **Skill-Based Deterministic Mini-Games:** Every mini-game outside the Casino section is skill, memory, knowledge, or reaction-based (Neon 2048, Memory Matrix, Tap Reflex). Their rewards are strictly deterministic from score.
+- **Casino Games Use Chance:** Slots, Crash, Plinko and Mines pay out by chance from a provably fair server seed (see [Casino Games](#-casino-games-slots-crash-plinko-mines)). App stores treat these as **simulated gambling**: expect a 17+ (Apple) / mature (Google Play) rating and the matching store questionnaire answers.
 - **Security-First Virtual Economy:** The client can never write coin balances, scores, or ledger entries directly. All balance updates and score certifications happen via server-side verification and atomic RPC transactions (`finish_game_session`, `apply_coin_transaction`) with RLS enforcement and advisory locks.
 
 ---
@@ -79,6 +80,28 @@ The target folder `supabase/functions/_shared/engines` is tracked in git with a 
   4. Runs shared engine `verify()`. On failure, marks session `rejected` with typed 422 error.
   5. On success, calls `finish_game_session` and returns full rewards summary.
 - **`game-daily-status` (GET)**: Computes user's today progress against per-game and global caps (using `REWARD_TIMEZONE`), plus current best scores.
+- **`casino-play` (POST)**: Every casino action, `{ game, action, ... }`: `slots/spin`, `plinko/drop`, `mines/start|reveal|cashout|active`, `crash/start|status|cashout|active`, plus `config` (limits + balance). See [Casino Games](#-casino-games-slots-crash-plinko-mines).
+
+---
+
+## 🎰 Casino Games (Slots, Crash, Plinko, Mines)
+
+Bet-and-win games played with the virtual coin wallet. Code: `src/features/casino/` (client), `shared/engines/casino.ts` (game math shared with the server), `supabase/functions/casino-play/` and `supabase/migrations/20261013000000_casino_games.sql` (server).
+
+| Game | How it pays | Return to player |
+| :--- | :--- | :--- |
+| **Lucky Reels** (slots) | 3 reels × 3 rows, each row a payline worth ⅓ of the bet. Three cherries 600×, sevens 175×, … any 3 bars 3× | ~96% |
+| **Crash** | Multiplier grows as e^(0.1·s); cash out (or auto cash-out) before the crash point. P(crash ≥ x) = 0.99 / x | 99% |
+| **Plinko** | 8 / 12 / 16 rows × low / medium / high risk bin tables | ~99% |
+| **Mines** | 5×5 board, 1–24 mines; multiplier = fair odds × 0.99 per safe reveal | 99% |
+
+- **Server decides every outcome.** The `casino-play` Edge Function draws floats from `HMAC-SHA256(serverSeed, "clientSeed:cursor")`. The SHA-256 hash of the server seed is returned when a round opens and the seed itself once it settles, so players can verify any round.
+- **Atomic coin movement.** `casino_open_round` debits the bet (and settles instantly for Slots/Plinko); `casino_settle_round` credits `floor(bet × multiplier)` (capped by `casino_config.max_payout`). Both go through `apply_coin_transaction` with idempotency keys `casino_bet:<round>` / `casino_win:<round>`, so a retried request never pays twice.
+- **Multi-step rounds.** Mines and Crash keep one active round per user and game (`uniq_casino_rounds_active`). Mine positions and crash points live in `casino_round_secrets`, which clients cannot read. Mines reveals use optimistic locking (`version`). Crash runs on the server clock from the round's `created_at`; the app polls `status` about once a second and cash-outs are judged by server time.
+- **Limits.** `casino_config` holds `min_bet` / `max_bet` / `max_payout` / `enabled` per game (defaults 10 / 5,000 / 1,000,000).
+- **Demo mode.** If the app has no Supabase project, no signed-in user, or `casino-play` isn't deployed, the games run locally against a separate 10,000-coin demo balance (labelled *DEMO COINS*) that never touches the real wallet.
+
+Deploy: apply the migration, then `supabase functions deploy casino-play`.
 
 ---
 
@@ -176,6 +199,9 @@ psql -d postgres -f supabase/tests/wallet_ledger_test.sql
 
 # Daily 7-Day Rewards verification
 psql -d postgres -f supabase/tests/daily_rewards_test.sql
+
+# Casino rounds (bets, payouts, limits, idempotency)
+psql -d postgres -f supabase/tests/casino_test.sql
 ```
 
 ---

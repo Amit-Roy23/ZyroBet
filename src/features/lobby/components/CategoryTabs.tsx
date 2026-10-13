@@ -29,6 +29,8 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
         return <Ionicons name="help-circle" size={size} color={iconColor} />;
       case 'trophy':
         return <Ionicons name="trophy" size={size} color={isSelected ? '#07140F' : colors.gold} />;
+      case 'casino':
+        return <Ionicons name="diamond" size={size} color={isSelected ? '#07140F' : colors.gold} />;
       default:
         return <Ionicons name="grid" size={size} color={iconColor} />;
     }

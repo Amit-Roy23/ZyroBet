@@ -1,4 +1,5 @@
-export type GameCategory = 'all' | 'hot' | 'puzzle' | 'arcade' | 'quiz' | 'events' | 'action';
+export type GameCategory =
+  'all' | 'hot' | 'puzzle' | 'arcade' | 'quiz' | 'events' | 'action' | 'casino';
 
 export type GameDifficulty = 'Easy' | 'Medium' | 'Hard';
 
